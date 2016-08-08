@@ -1,7 +1,8 @@
 {
     "presets": ["es2015", "es2017"],
     "plugins": [
-        "transform-runtime", 
+        "transform-runtime",
+        "transform-class-properties", 
         "transform-async-to-generator", 
         "transform-decorators-legacy"
     ]

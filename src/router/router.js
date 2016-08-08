@@ -1,10 +1,16 @@
 import {Route} from './route.js'
+import {Handler} from './handler.js'
 import {NotFoundError} from '../http/errors/errors.js'
+import {Loader} from '../loader/loader.js'
+
+const loader = new Loader(process.cwd())
+
 
 const ALLOWED_METHOD = ['GET', 'POST', 'PUT', 'DELETE']
 let METHODS_STORE = {}
 
 export class Router {
+
     static cleanRoutes() {
         METHODS_STORE = {}
     }
@@ -14,6 +20,10 @@ export class Router {
             throw new TypeError('Method name must be string')
         }
 
+        if (ALLOWED_METHOD.indexOf(method) === -1) {
+            throw new Error(`Method ${method} is not supported`)
+        }
+
         if (METHODS_STORE[method] === undefined) {
             METHODS_STORE[method] = new Map
         }
@@ -21,24 +31,14 @@ export class Router {
         return METHODS_STORE[method]
     }
 
-    static addRoute(method, pattern, options) {
+    static addRoute(method, pattern, handler, matches = {}) {
         method = method.toUpperCase()
-        let handler
-        let matches = {}
-
-        // TODO ligic for setting up handler must be in other place
-        if (typeof options === 'function') {
-            handler = options
-        } else if (options.handler !== undefined) {
-            handler = options.handler
-            delete options.handler
-            matches = Object.assign({}, options)
-        } else {
-            throw new Error("Route handler is not defined")
-        }
 
         const route = new Route(method, pattern, matches)
-        Router.getMethodStore(method).set(route, handler)
+        const handlerFunction = new Handler(loader, handler)
+        
+        Router.getMethodStore(method).set(route, handlerFunction)
+        
         return route
     }
 

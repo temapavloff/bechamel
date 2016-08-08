@@ -2,18 +2,12 @@ import {createServer} from 'http'
 import {HttpError} from './errors/errors.js'
 import {Router} from '../router/router.js'
 
-Router.get('/', async () => 'It is index!')
-Router.get('/name/{name}', {
-    name: '[a-z]+',
-    handler: async (name) => `It is ${name}!`
-})
-
 let serverInstance = null
 
-class Server {
+export class Server {
     constructor(port) {
-        serverInstance = createServer((req, res) => {this.handleRequest(req, res)})
         this.port = port
+        serverInstance = createServer((req, res) => {this.handleRequest(req, res)})
     }
 
     run() {
@@ -28,7 +22,7 @@ class Server {
             const route = Router.getMatchingRoute(method, url)
             const params = route.extractValues(url)
             const handler = Router.getHandler(route)
-            const responseBody = await handler(...params)
+            const responseBody = await handler.run(...params)
             
             res.end(responseBody)
         } catch (e) {
@@ -42,5 +36,3 @@ class Server {
         }
     }
 }
-
-(new Server(8000)).run()
