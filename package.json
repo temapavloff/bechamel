@@ -9,6 +9,10 @@
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register ./test/**/*.js",
     "testone": "./node_modules/.bin/mocha --compilers js:babel-core/register"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:temapavloff/bechamel.git"
+  },
   "keywords": [
     "web",
     "framework",
